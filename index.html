@@ -1100,6 +1100,7 @@ function showSection(id) {
   document.getElementById(id).classList.add('visible');
   const map = {s1:0, s2:1, test:2};
   document.querySelectorAll('.tab-btn')[map[id]].classList.add('active');
+  localStorage.setItem('lastSection', id);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1368,6 +1369,10 @@ renderMCQ(s2mcqData, 's2mcq-questions', 's2mcq');
 renderTF(s2tfData,   's2tf-questions',  's2tf');
 renderFill(s2fillData,   's2fill-questions');
 renderSolve(s2solveData, 's2solve-questions');
+
+// Restore last viewed section
+const lastSection = localStorage.getItem('lastSection') || 's1';
+showSection(lastSection);
 </script>
 </body>
 </html>
