@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Image Processing — Question Bank</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --surface2: #1a1e29;
+    --border: #252a38;
+    --accent: #4f8cff;
+    --accent2: #a78bfa;
+    --correct: #22c55e;
+    --correct-bg: rgba(34,197,94,0.10);
+    --wrong: #ef4444;
+    --wrong-bg: rgba(239,68,68,0.08);
+    --neutral-bg: rgba(79,140,255,0.06);
+    --text: #e8eaf2;
+    --muted: #6b7280;
+    --tag: #232840;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  header {
+    padding: 56px 0 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 260px;
+    background: radial-gradient(ellipse at 50% 30%, rgba(79,140,255,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  header .kicker {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--text);
+  }
+  header h1 em { font-style: italic; color: var(--accent2); }
+  header .subtitle { margin-top: 12px; color: var(--muted); font-size: 14px; }
+
+  .tab-bar {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 24px 36px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 8px 20px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: .5px;
+  }
+  .tab-btn:hover { color: var(--text); border-color: var(--accent); }
+  .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .tab-btn.test-tab.active { background: var(--accent2); border-color: var(--accent2); }
+
+  main { max-width: 860px; margin: 0 auto; padding: 0 24px 80px; }
+
+  .section { display: none; }
+  .section.visible { display: block; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    font-weight: 400;
+  }
+  .section-header .badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    background: var(--tag);
+    color: var(--accent);
+    border: 1px solid rgba(79,140,255,.2);
+    white-space: nowrap;
+  }
+
+  /* Sub-section dividers inside Lec1 */
+  .sub-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 44px 0 22px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sub-divider:first-of-type { margin-top: 0; }
+  .sub-divider h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    color: var(--accent2);
+  }
+  .sub-divider .sub-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 3px 9px;
+    border-radius: 100px;
+    background: rgba(167,139,250,0.10);
+    color: var(--accent2);
+    border: 1px solid rgba(167,139,250,.2);
+  }
+
+  /* Progress */
+  .progress-bar-wrap {
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-bar-track {
+    flex: 1;
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 100px;
+    transition: width .5s ease;
+  }
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* Question cards */
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color .2s;
+    animation: fadeUp .3s ease both;
+  }
+  .q-card:hover { border-color: #333a52; }
+  .q-card.answered-correct { border-color: rgba(34,197,94,.3); }
+  .q-card.answered-wrong { border-color: rgba(239,68,68,.25); }
+
+  .q-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px 22px 18px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .q-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    padding-top: 3px;
+    min-width: 28px;
+  }
+  .q-text { flex: 1; font-size: 14.5px; font-weight: 500; line-height: 1.55; color: var(--text); }
+  .q-chevron {
+    width: 18px; height: 18px;
+    color: var(--muted);
+    transition: transform .25s, color .2s;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .q-card.open .q-chevron { transform: rotate(180deg); color: var(--accent); }
+
+  .explain-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all .2s;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .explain-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  .q-explanation {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    background: rgba(167,139,250,0.08);
+    border: 1px solid rgba(167,139,250,.2);
+    color: #c4b5fd;
+    font-size: 13px;
+    line-height: 1.5;
+    display: none;
+  }
+  .q-explanation.visible { display: block; }
+  .q-explanation .exp-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 6px;
+  }
+
+  .q-body { display: none; padding: 0 22px 20px 64px; }
+  .q-card.open .q-body { display: block; }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  @media (max-width: 560px) { .options-grid { grid-template-columns: 1fr; } }
+
+  .opt-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 11px 14px;
+    cursor: pointer;
+    transition: all .18s;
+    text-align: left;
+    font-family: 'Sora', sans-serif;
+    font-size: 13.5px;
+    color: var(--text);
+    line-height: 1.45;
+  }
+  .opt-btn:hover:not(:disabled) { background: var(--neutral-bg); border-color: var(--accent); color: #fff; }
+  .opt-btn .opt-letter {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    min-width: 18px;
+    color: var(--muted);
+    padding-top: 1px;
+  }
+  .opt-btn.correct { background: var(--correct-bg); border-color: var(--correct); color: #86efac; }
+  .opt-btn.correct .opt-letter { color: var(--correct); }
+  .opt-btn.wrong { background: var(--wrong-bg); border-color: var(--wrong); color: #fca5a5; }
+  .opt-btn.wrong .opt-letter { color: var(--wrong); }
+  .opt-btn:disabled { cursor: default; opacity: .85; }
+
+  /* Always-visible answer box */
+  .answer-always {
+    margin-top: 10px;
+    background: var(--correct-bg);
+    border: 1px solid rgba(34,197,94,.22);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    color: #86efac;
+    line-height: 1.55;
+  }
+  .answer-always .ans-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--correct);
+    margin-bottom: 4px;
+  }
+
+  .tf-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .tf-btn {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all .18s;
+  }
+  .tf-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .tf-btn.correct { background: var(--correct-bg); border-color: var(--correct); color: #86efac; }
+  .tf-btn.wrong   { background: var(--wrong-bg); border-color: var(--wrong); color: #fca5a5; }
+  .tf-btn:disabled { cursor: default; }
+
+  .q-type-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 10px;
+  }
+
+  .stats-bar { display: flex; gap: 20px; padding: 12px 0 24px; flex-wrap: wrap; }
+  .stat { display: flex; flex-direction: column; gap: 2px; }
+  .stat-val { font-family: 'DM Mono', monospace; font-size: 1.6rem; color: var(--text); }
+  .stat-val.green { color: var(--correct); }
+  .stat-val.red { color: var(--wrong); }
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
+
+  /* ═══ TEST YOURSELF ═══ */
+  .test-setup { text-align: center; padding: 32px 20px; }
+  .test-setup p { color: var(--muted); margin-bottom: 32px; font-size: 14px; }
+
+  .bank-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 32px;
+    text-align: left;
+  }
+  @media (max-width: 560px) { .bank-grid { grid-template-columns: 1fr; } }
+
+  .bank-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px 18px 18px;
+    cursor: pointer;
+    transition: all .2s;
+    position: relative;
+  }
+  .bank-card:hover { border-color: var(--accent2); }
+  .bank-card.selected { border-color: var(--accent2); background: rgba(167,139,250,0.07); }
+  .bank-check {
+    position: absolute;
+    top: 14px; right: 14px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--surface2);
+    transition: all .2s;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #fff;
+  }
+  .bank-card.selected .bank-check { background: var(--accent2); border-color: var(--accent2); }
+  .bank-card.selected .bank-check::after { content: '✓'; }
+  .bank-title { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--accent2); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
+  .bank-name { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+  .bank-count { font-size: 12px; color: var(--muted); }
+
+  .randomize-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0 32px;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .toggle-checkbox {
+    appearance: none;
+    width: 44px;
+    height: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    cursor: pointer;
+    position: relative;
+    transition: all .2s;
+    flex-shrink: 0;
+  }
+  .toggle-checkbox::before {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: var(--muted);
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: all .2s;
+  }
+  .toggle-checkbox:checked {
+    background: var(--accent2);
+    border-color: var(--accent2);
+  }
+  .toggle-checkbox:checked::before {
+    left: 24px;
+    background: #fff;
+  }
+
+  .start-btn {
+    background: var(--accent2);
+    border: none;
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 1px;
+    padding: 14px 44px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all .2s;
+    opacity: .35;
+    pointer-events: none;
+  }
+  .start-btn.ready { opacity: 1; pointer-events: all; }
+  .start-btn.ready:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+  .quiz-mode { display: none; }
+  .quiz-mode.active { display: block; }
+  .test-setup-wrap.hidden { display: none; }
+
+  .quiz-progress-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+    gap: 14px;
+  }
+  .quiz-q-counter { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .quiz-score-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    background: var(--tag);
+    color: var(--accent2);
+    border: 1px solid rgba(167,139,250,.2);
+    white-space: nowrap;
+  }
+
+  .quiz-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 28px 24px;
+    margin-bottom: 20px;
+    min-height: 180px;
+  }
+  .quiz-type-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent2); margin-bottom: 14px; }
+  .quiz-question { font-size: 16px; font-weight: 500; line-height: 1.6; margin-bottom: 24px; color: var(--text); }
+
+  .quiz-feedback {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    display: none;
+  }
+  .quiz-feedback.correct-fb { background: var(--correct-bg); border: 1px solid rgba(34,197,94,.3); color: #86efac; display: block; }
+  .quiz-feedback.wrong-fb   { background: var(--wrong-bg); border: 1px solid rgba(239,68,68,.3); color: #fca5a5; display: block; }
+  .quiz-feedback .fb-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; opacity: .7; }
+
+  .quiz-fill-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s;
+    margin-bottom: 12px;
+  }
+  .quiz-fill-input:focus { border-color: var(--accent2); }
+  .quiz-fill-input:disabled { opacity: .6; }
+
+  .quiz-solve-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s;
+    margin-bottom: 12px;
+    resize: vertical;
+    min-height: 80px;
+  }
+  .quiz-solve-input:focus { border-color: var(--accent2); }
+
+  .quiz-nav {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .quiz-nav-right { margin-left: auto; display: flex; gap: 10px; }
+  .quiz-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: .5px;
+    padding: 10px 22px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all .18s;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+  }
+  .quiz-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+  .quiz-btn.primary { background: var(--accent2); border-color: var(--accent2); color: #fff; }
+  .quiz-btn.primary:hover { filter: brightness(1.1); }
+  .quiz-btn.danger { border-color: rgba(239,68,68,.3); color: var(--wrong); }
+  .quiz-btn.danger:hover { background: var(--wrong-bg); }
+
+  /* Results */
+  .quiz-results { text-align: center; padding: 48px 20px; }
+  .result-score { font-family: 'DM Serif Display', serif; font-size: clamp(3rem,10vw,5rem); color: var(--text); line-height: 1; margin-bottom: 8px; }
+  .result-score em { color: var(--accent2); font-style: normal; }
+  .result-label { font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 32px; }
+  .result-breakdown { display: flex; gap: 32px; justify-content: center; margin-bottom: 40px; flex-wrap: wrap; }
+  .result-stat { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+  .result-stat-val { font-family: 'DM Mono', monospace; font-size: 2rem; }
+  .result-stat-val.g { color: var(--correct); }
+  .result-stat-val.r { color: var(--wrong); }
+  .result-stat-val.b { color: var(--accent); }
+  .result-stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
+  .retry-btn {
+    background: var(--accent2);
+    border: none;
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 1px;
+    padding: 13px 32px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all .2s;
+    margin: 0 6px 8px;
+  }
+  .retry-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .retry-btn.outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .retry-btn.outline:hover { border-color: var(--accent2); color: var(--accent2); transform: none; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(14px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">Study Mode · Question Bank</div>
+  <h1>Digital Image<br><em>Processing</em></h1>
+  <div class="subtitle">MATLAB Question Bank &nbsp;·&nbsp; Lec1 Q&amp;A &nbsp;·&nbsp; Test Yourself</div>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active"  onclick="showSection('s1')">MATLAB Question Bank (50)</button>
+  <button class="tab-btn"         onclick="showSection('s2')">Lec1 Q&amp;A (41)</button>
+  <button class="tab-btn test-tab" onclick="showSection('test')">⚡ Test Yourself</button>
+</div>
+
+<main>
+
+<!-- ═══ SECTION 1 — MATLAB ═══ -->
+<div id="s1" class="section visible">
+  <div class="section-header">
+    <h2>MATLAB Question Bank</h2>
+    <span class="badge">50 MCQ</span>
+  </div>
+  <div id="s1-questions"></div>
+</div>
+
+<!-- ═══ SECTION 2 — Lec1 Q&A (all grouped) ═══ -->
+<div id="s2" class="section">
+  <div class="section-header">
+    <h2>Lec1 Q&amp;A</h2>
+    <span class="badge">41 Questions</span>
+  </div>
+
+  <div class="sub-divider">
+    <h3>Multiple Choice</h3>
+    <span class="sub-badge">13 Questions</span>
+  </div>
+  <div id="s2mcq-questions"></div>
+
+  <div class="sub-divider">
+    <h3>True / False</h3>
+    <span class="sub-badge">13 Questions</span>
+  </div>
+  <div id="s2tf-questions"></div>
+
+  <div class="sub-divider">
+    <h3>Fill in the Blank</h3>
+    <span class="sub-badge">11 Questions</span>
+  </div>
+  <div id="s2fill-questions"></div>
+
+  <div class="sub-divider">
+    <h3>Solve</h3>
+    <span class="sub-badge">4 Questions</span>
+  </div>
+  <div id="s2solve-questions"></div>
+</div>
+
+<!-- ═══ SECTION 3 — TEST YOURSELF ═══ -->
+<div id="test" class="section">
+
+  <!-- Setup screen -->
+  <div class="test-setup-wrap" id="test-setup-wrap">
+    <div class="section-header">
+      <h2>Test Yourself</h2>
+      <span class="badge" style="color:var(--accent2);border-color:rgba(167,139,250,.3);">Quiz Mode</span>
+    </div>
+    <div class="test-setup">
+      <p>Pick one or more question banks, then start your quiz. Questions will be shuffled.</p>
+      <div class="bank-grid">
+        <div class="bank-card" id="bank-s1" onclick="toggleBank('s1')">
+          <div class="bank-check"></div>
+          <div class="bank-title">Question Bank</div>
+          <div class="bank-name">MATLAB &amp; Matrices</div>
+          <div class="bank-count">50 MCQ questions</div>
+        </div>
+        <div class="bank-card" id="bank-lec1mcq" onclick="toggleBank('lec1mcq')">
+          <div class="bank-check"></div>
+          <div class="bank-title">Lec1 Q&amp;A</div>
+          <div class="bank-name">Multiple Choice</div>
+          <div class="bank-count">13 MCQ questions</div>
+        </div>
+        <div class="bank-card" id="bank-lec1tf" onclick="toggleBank('lec1tf')">
+          <div class="bank-check"></div>
+          <div class="bank-title">Lec1 Q&amp;A</div>
+          <div class="bank-name">True / False</div>
+          <div class="bank-count">13 T/F questions</div>
+        </div>
+        <div class="bank-card" id="bank-lec1fill" onclick="toggleBank('lec1fill')">
+          <div class="bank-check"></div>
+          <div class="bank-title">Lec1 Q&amp;A</div>
+          <div class="bank-name">Fill in the Blank</div>
+          <div class="bank-count">11 questions</div>
+        </div>
+        <div class="bank-card" id="bank-lec1solve" onclick="toggleBank('lec1solve')">
+          <div class="bank-check"></div>
+          <div class="bank-title">Lec1 Q&amp;A</div>
+          <div class="bank-name">Solve</div>
+          <div class="bank-count">4 questions</div>
+        </div>
+      </div>
+      <div class="randomize-toggle">
+        <input type="checkbox" id="randomize-toggle" class="toggle-checkbox" checked onchange="toggleRandomize()">
+        <label for="randomize-toggle">Randomize questions</label>
+      </div>
+      <button class="start-btn" id="start-btn" onclick="startQuiz()">Start Quiz →</button>
+    </div>
+  </div>
+
+  <!-- Active quiz -->
+  <div class="quiz-mode" id="quiz-mode">
+    <div class="quiz-progress-header">
+      <div class="quiz-q-counter" id="quiz-counter">Question 1 / 10</div>
+      <div class="progress-bar-track" style="flex:1">
+        <div class="progress-bar-fill" id="quiz-prog-bar" style="width:0%;background:linear-gradient(90deg,var(--accent2),var(--accent))"></div>
+      </div>
+      <div class="quiz-score-pill" id="quiz-score-pill">✓ 0 &nbsp;✗ 0</div>
+    </div>
+
+    <div class="quiz-card">
+      <div class="quiz-type-label" id="quiz-type-label">MCQ</div>
+      <div class="quiz-question"   id="quiz-question">Question text here</div>
+      <div id="quiz-options-area"></div>
+      <div class="quiz-feedback"   id="quiz-feedback"></div>
+    </div>
+
+    <div class="quiz-nav">
+      <button class="quiz-btn danger"   onclick="exitQuiz()">✕ Exit</button>
+      <div class="quiz-nav-right">
+        <button class="quiz-btn"         id="quiz-submit-btn" onclick="submitAnswer()" style="display:none">Submit</button>
+        <button class="quiz-btn"         id="quiz-skip-btn"   onclick="skipQuestion()">Skip</button>
+        <button class="quiz-btn primary" id="quiz-next-btn"   onclick="nextQuestion()" style="display:none">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="quiz-results" id="quiz-results" style="display:none">
+    <div class="result-score"><em id="res-pct">0%</em></div>
+    <div class="result-label">Quiz Complete</div>
+    <div class="result-breakdown">
+      <div class="result-stat"><span class="result-stat-val g" id="res-correct">0</span><span class="result-stat-label">Correct</span></div>
+      <div class="result-stat"><span class="result-stat-val r" id="res-wrong">0</span><span class="result-stat-label">Wrong</span></div>
+      <div class="result-stat"><span class="result-stat-val b" id="res-skipped">0</span><span class="result-stat-label">Skipped</span></div>
+      <div class="result-stat"><span class="result-stat-val"  id="res-total">0</span><span class="result-stat-label">Total</span></div>
+    </div>
+    <button class="retry-btn"         onclick="retryQuiz()">Retry (Reshuffled)</button>
+    <button class="retry-btn outline"  onclick="exitQuiz()">Change Banks</button>
+  </div>
+
+</div><!-- /test -->
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════
+
+const s1Data = [
+  {q:"What is a digital image?", opts:["A continuous visual signal","A numerical representation of a visual scene","A physical photograph","A printed picture"], ans:1},
+  {q:"A digital image is divided into small elements called:", opts:["Nodes","Pixels","Frames","Vectors"], ans:1},
+  {q:"Each pixel in a digital image stores:", opts:["A text value","A numerical value representing intensity or color","A vector coordinate","A file format"], ans:1},
+  {q:"Pixels represent:", opts:["Sound intensity","Image brightness or color at a specific location"], ans:1},
+  {q:"The structure used to represent digital images in computers is usually:", opts:["Linked List","Matrix","Stack","Queue"], ans:1, exp:"Images are essentially 2D grids of pixel values. A matrix perfectly represents this structure—each element (i,j) corresponds to a pixel location, and the value represents brightness or color. This is why MATLAB is so effective for image processing; matrices are its native data type. Linked lists, stacks, and queues are sequential structures that don't efficiently represent spatial 2D data."},
+  {q:"Which of the following is a matrix operation?", opts:["Addition","Subtraction","Multiplication","All of the above"], ans:3},
+  {q:"Which symbol represents matrix exponentiation in MATLAB?", opts:["*","^","/","+"], ans:1},
+  {q:"Matrix subtraction is represented by:", opts:["+","-","*","/"], ans:1},
+  {q:"Matrix multiplication is represented by:", opts:["*",".*","+","./"], ans:0, exp:"This is crucial: the single * operator performs proper matrix multiplication (following linear algebra rules), where element (i,j) in the result comes from the dot product of row i and column j. This is different from element-wise multiplication (.*)"},
+  {q:"Matrix division is represented by:", opts:["/",".*","+","^"], ans:0, exp:"The / operator in MATLAB is matrix division, which solves the linear system A/B ≈ A × B⁻¹. This is NOT element-wise division (./) but rather uses matrix algebra concepts. Use ./ only when you want to divide each element independently."},
+  {q:"Element-wise multiplication in MATLAB is written as:", opts:["*",".*","./",".^"], ans:1},
+  {q:"Element-wise division is represented by:", opts:["/","./",".*","^"], ans:1},
+  {q:"Element-wise exponentiation uses:", opts:["^",".^","./",".*"], ans:1},
+  {q:"Element-wise operations work:", opts:["Between matrices only","Between elements of matrices","Between files","Between images only"], ans:1},
+  {q:"MATLAB is commonly used for:", opts:["Word processing","Image processing and matrix computation","Email management","Video editing"], ans:1},
+  {q:"Variables in MATLAB are created by:", opts:["Declaring data types","Assigning values directly","Compiling code","Creating classes"], ans:1},
+  {q:"A 1D matrix can be:", opts:["Row matrix","Column matrix","Both A and B","Square matrix"], ans:2},
+  {q:"ND matrix means:", opts:["No dimension","One dimension","Multi-dimensional matrix","Two elements matrix"], ans:2},
+  {q:"Matrix elements can be accessed using:", opts:["Indexing","Looping only","Sorting","Hashing"], ans:0},
+  {q:"Matrix indexing is based on:", opts:["Row and column numbers","Pixel colors","File structure","Memory size"], ans:0},
+  {q:"The function used to create a matrix filled with zeros is:", opts:["ones()","zeros()","rand()","eye()"], ans:1},
+  {q:"The function used to create a matrix filled with ones is:", opts:["ones()","zeros()","rand()","eye()"], ans:0},
+  {q:"The function used to generate random numbers in a matrix is:", opts:["rand()","zeros()","ones()","eye()"], ans:0},
+  {q:"The function used to create an identity matrix is:", opts:["rand()","eye()","ones()","linspace()"], ans:1},
+  {q:"The magic() function creates:", opts:["Random matrix","Matrix of zeros","Magic square matrix","Identity matrix"], ans:2},
+  {q:"The linspace function is used to:", opts:["Create random values","Generate evenly spaced numbers","Create matrices","Delete values"], ans:1},
+  {q:"In MATLAB, graphs can be created using:", opts:["One matrix only","Two matrices (X and Y values)","Text files","Pixel arrays"], ans:1},
+  {q:"Matrix exponentiation requires:", opts:["Rectangular matrices","Square matrices","Random matrices","Identity matrices"], ans:1, exp:"Only square matrices can be raised to powers in linear algebra. This is because matrix multiplication A×B is only defined when columns of A equal rows of B. For A^n to work, A must be n×n so that A×A produces a matrix of the same dimensions repeated."},
+  {q:"The function max(A) returns:", opts:["Minimum value of matrix","Maximum value of each column","Random value","Average value"], ans:1, exp:"max(A) returns the maximum value from EACH COLUMN (as a row vector), not a single value. If you want a single maximum, use max(max(A)). This behavior is important when working with image data where you might need column-wise statistics."},
+  {q:"The function size(A) returns:", opts:["Number of rows and columns","Maximum element","Minimum element","Length of vector"], ans:0},
+  {q:"The function length(A) returns:", opts:["Total elements in matrix","Larger dimension of matrix","Number of rows only","Number of columns only"], ans:1, exp:"length(A) returns the larger dimension, not the total count. For a 3×5 matrix, it returns 5. For a vector, it returns its length. This is different from size(A) which returns both dimensions. Important distinction when checking matrix properties!"},
+  {q:"The function diag(A) does what when A is a vector?", opts:["Creates a random matrix","Creates a square matrix with A on the diagonal","Removes diagonal values","Transposes matrix"], ans:1, exp:"diag() is powerful: when given a vector, it creates a square matrix with the vector on the main diagonal and zeros elsewhere. When given a matrix, it extracts the diagonal. This is useful for creating scaling matrices in image processing."},
+  {q:"The sum function in MATLAB is used to:", opts:["Multiply elements","Add elements","Divide elements","Rotate matrix"], ans:1},
+  {q:"The transpose operator in MATLAB is:", opts:["*","'","^","./"], ans:1},
+  {q:"The function inv(A) computes:", opts:["Transpose of matrix","Inverse of matrix","Maximum value","Sum of elements"], ans:1},
+  {q:"The inverse of a matrix can be computed only if the matrix is:", opts:["Random","Square","Diagonal","Sparse"], ans:1, exp:"First, the matrix must be SQUARE (n×n). But that's not enough—it must also be invertible (non-singular), meaning its determinant ≠ 0. Not all square matrices have inverses. This distinction is crucial: inv(A) will error if A is singular or rectangular. For rectangular matrices, use pseudo-inverse pinv(A)."},
+  {q:"The function flipud(A) does what?", opts:["Flips matrix left-right","Flips matrix up-down","Rotates matrix","Transposes matrix"], ans:1},
+  {q:"The function fliplr(A) does what?", opts:["Flips matrix left-right","Flips matrix up-down","Rotates matrix","Adds matrices"], ans:0},
+  {q:"The function rot90(A) is used to:", opts:["Rotate matrix 45°","Rotate matrix 90°","Rotate matrix 180°","Flip matrix"], ans:1},
+  {q:"The function transpose(A) performs:", opts:["Matrix rotation","Matrix inversion","Swapping rows with columns","Matrix addition"], ans:2},
+  {q:"Images in MATLAB are represented as:", opts:["Text files","Matrices","Audio signals","Graphs"], ans:1},
+  {q:"The function imread() is used to:", opts:["Save an image","Read an image file into MATLAB","Delete image","Compress image"], ans:1},
+  {q:"The function imshow() is used to:", opts:["Read image","Display image","Rotate image","Save image"], ans:1},
+  {q:"The function impixelinfo is used to:", opts:["Display pixel information","Remove pixels","Resize image","Blur image"], ans:0},
+  {q:"The function impixel(A,column,row) returns:", opts:["Entire image","Pixel value at specific location","Matrix size","Image type"], ans:1},
+  {q:"Mathematical operations on image matrices can change:", opts:["Image color","Color contrast","Brightness","All of the above"], ans:3, exp:"This is the power of digital image processing! Adding a constant increases brightness, multiplying increases contrast, and manipulating individual RGB channels changes colors. Since images are just matrices of numbers, any mathematical operation affects pixels in some way."},
+  {q:"The function imshowpair() is used to:", opts:["Merge images","Compare two images","Delete images","Compress images"], ans:1},
+  {q:"imshowpair() can display:", opts:["Two identical images","Difference between two images","Image histogram","Image size"], ans:1},
+  {q:"In MATLAB image processing, performing mathematical operations on an image is possible because the image is represented as:", opts:["A text file","A matrix of numerical values","A compressed file","A graphical object"], ans:1},
+  {q:"Which MATLAB function is used to display the difference between two images for comparison?", opts:["imread()","imshow()","imshowpair()","impixel()"], ans:2},
+];
+
+const s2mcqData = [
+  {q:"Which of the following is NOT an image?", opts:["A photograph","A sculpture","A drawing","A screenshot"], ans:1, exp:"A sculpture is a 3D physical object. While we can photograph it and get a 2D image, the sculpture itself isn't an 'image.' An image is always a 2D representation—photographs, drawings, paintings, and digital screenshots are all 2D representations of visual information."},
+  {q:"An image that is printed on paper is considered a:", opts:["Digital image","Physical image","Binary image","Analog image"], ans:1, exp:"Printed images are 'physical' (or analog) images because they exist as materials on paper. They're NOT digital—a digital image exists only as numerical data in a computer. You can SCAN a printed image to convert it to digital format, but the printed form itself is analog/physical."},
+  {q:"What is the primary goal of image processing?", opts:["To delete unwanted images","To enhance images or extract useful information","To convert all images to color","To print images on paper"], ans:1},
+  {q:"Which of the following is NOT a reason we need image processing?", opts:["To remove noise","To detect edges","To increase the file size","To analyze medical images"], ans:2, exp:"Image processing aims to REDUCE file size (through compression), not increase it. All other options are genuine reasons: noise removal improves quality, edge detection identifies features, and medical imaging relies on processing to diagnose conditions."},
+  {q:"What does increasing the contrast of an image do?", opts:["It makes the image more blurry.","It makes objects more distinguishable from each other.","It removes color from the image.","It adds noise to the image."], ans:1, exp:"Contrast is the difference in brightness between light and dark areas. Increasing it makes bright areas brighter and dark areas darker, making boundaries and features stand out more clearly. This is mathematically done by: new_pixel = (pixel - 128) × contrast_factor + 128."},
+  {q:"A low contrast image typically looks:", opts:["Very sharp","Dull or flat","Grainy","Overly bright"], ans:1},
+  {q:"Subdividing an image into its constituent parts (like finding lines, cars, or trees) is known as:", opts:["Image restoration","Image sharpening","Image segmentation","Image acquisition"], ans:2, exp:"Image SEGMENTATION is the process of partitioning an image into meaningful regions or objects. It's classification at the pixel level. This is a core technique in computer vision used for object detection, medical imaging, and autonomous systems."},
+  {q:"Which of the following is an application of image processing?", opts:["Writing an email","Editing a text document","Face recognition in smartphones","Creating a spreadsheet"], ans:2, exp:"Face recognition is a direct application—it uses image processing techniques to detect facial features, measure distances between them, and compare against stored patterns. Other real-world applications include: medical diagnosis, satellite image analysis, autonomous vehicles, and quality control in factories."},
+  {q:"What is the first basic step in image processing?", opts:["Preprocessing","Image acquisition","Applying algorithms","Output"], ans:1, exp:"Image ACQUISITION is the first step—you must obtain the image (photograph, scan, camera, sensor). Only after you have the image can you preprocess it (clean, normalize), apply algorithms (filter, segment), and output results."},
+  {q:"How many possible colors can a pixel in a binary image have?", opts:["2 (Black and White)","256 shades of gray","Over 16 million","3 (Red, Green, Blue)"], ans:0},
+  {q:"In an 8-bit grayscale image, what pixel value represents the color white?", opts:["0","1","128","255"], ans:3, exp:"In grayscale, values range 0-255 (8 bits = 256 values). 0 is black (no light), 255 is white (maximum light), and everything between is varying shades of gray. This is standard across all image processing—higher values = brighter."},
+  {q:"A color image is often stored as a 3D matrix. What does the third dimension represent?", opts:["The pixel's brightness","The three color channels (Red, Green, Blue)","The image's height","The image's width"], ans:1, exp:"A color image is 3D: height × width × 3 (for RGB). Each of the 3 layers represents one color channel. For example, image[:,:,0] is all red values, image[:,:,1] is greens, image[:,:,2] is blues. This is why image(i,j) in color is actually a 3-element vector [R, G, B]."},
+  {q:"What is the purpose of an indexed image?", opts:["To display more colors than an RGB image","To reduce memory size by using a color lookup table","To create 3D images","To store images for medical applications only"], ans:1, exp:"Indexed images use a PALETTE or color lookup table (CLUT). Instead of storing RGB for each pixel, they store an index (0-255) that points to a color in the palette. This saves memory: indexed uses 1 byte/pixel vs RGB's 3 bytes/pixel. Trade-off: up to 256 colors instead of 16 million."},
+];
+
+const s2tfData = [
+  {q:"An analog image, like a film camera photo, is stored as numerical data in a computer.", ans:false, exp:"Film photos exist as chemical patterns on film—not numerical. To work with them in a computer, you must DIGITIZE (scan) them first, converting the continuous tones into pixels with numerical values. The film photo itself is analog, not digital."},
+  {q:"A digital image is made up of small elements called matrices.", ans:true},
+  {q:"Image processing involves applying mathematical operations to physical photographs.", ans:false, exp:"Image processing operates on DIGITAL images (numbers in memory), not physical photographs. You must first digitize a photograph (scan/photograph with camera) to turn it into numbers. Then image processing can begin. The physical photograph itself is not processed."},
+  {q:"Compressing an image is one of the reasons we need image processing.", ans:true},
+  {q:"Image sharpening increases the contrast between neighboring pixels, especially around edges.", ans:true, exp:"Sharpening works by exaggerating differences between adjacent pixels. This is done using filters that subtract blurred versions from the original. Where edges exist (big pixel differences), the effect is strong. This makes fine details and edges stand out."},
+  {q:"De-blurring can perfectly reverse any kind of blur, including motion blur.", ans:false, exp:"Deblurring is an inverse problem: once blur happens, some information is LOST forever. After a photograph is motion-blurred, pixels from different scenes are averaged—you can't recover which original pixels contributed. While some blur can be reduced (deconvolution), PERFECT reversal is mathematically impossible for all blur types."},
+  {q:"Edge detection is useful for object recognition and analysis.", ans:true, exp:"Edges are boundaries where pixel values change abruptly. They mark object outlines. Once detected, edges form a skeleton of the image's content, which is perfect for object recognition, shape analysis, and feature extraction. Most computer vision algorithms rely on edge information."},
+  {q:"Image restoration can involve removing periodic interference from an image.", ans:true, exp:"Periodic noise (like scan lines or aliasing) can be removed using frequency domain techniques (Fourier transforms). This is one of the most powerful image restoration applications—converting periodic patterns to a frequency domain where they become isolated spikes that can be filtered out."},
+  {q:"Analyzing satellite images is an application of image processing.", ans:true},
+  {q:"Preprocessing in image processing includes steps like removing noise and enhancing contrast.", ans:true},
+  {q:"In a grayscale image, each pixel is typically stored using only 1 bit.", ans:false, exp:"1 bit can only represent 2 values (0 or 1 = black or white). Grayscale images need to represent 256 shades (0-255), which requires 8 BITS (1 byte) per pixel. A 1-bit image would be pure black and white with no gray tones—called a BINARY image."},
+  {q:"A pixel in a color image has a single value that determines its color.", ans:false, exp:"Each color pixel is actually THREE values: R, G, B (Red, Green, Blue intensities), each ranging 0-255. A single value can't specify color because RGB is a 3D color space. Only grayscale pixels have single values (representing intensity alone)."},
+  {q:"Indexed images use a color lookup table (palette) to store color information.", ans:true},
+];
+
+const s2fillData = [
+  {q:"A digital image is a digital representation of visual information stored as _____________ data.", ans:"numerical"},
+  {q:"In a computer, a digital image is represented using _____________ data (0s and 1s).", ans:"binary"},
+  {q:"Image processing is a field of computer science that applies _____________ operations to digital images.", ans:"mathematical"},
+  {q:"Highlighting _____________ is the process of identifying and emphasizing the boundaries of objects within an image.", ans:"edges"},
+  {q:"_____________ refers to the difference in brightness or intensity between objects in an image.", ans:"Contrast"},
+  {q:"The final step in image processing is the _____________ , which could be a new image or extracted information.", ans:"output"},
+  {q:"In an aerial photograph, image segmentation could be used to identify cars, trees, buildings, or _____________.", ans:"roads"},
+  {q:"A _____________ image contains only two possible pixel values: 0 for black and 1 for white.", ans:"binary"},
+  {q:"In a grayscale image, a pixel value of 0 represents _____________.", ans:"black"},
+  {q:"A color image uses three channels: Red, Green, and _____________.", ans:"Blue"},
+  {q:"A pixel value of (0, 255, 0) in an RGB image represents the color _____________.", ans:"green"},
+];
+
+const s2solveData = [
+  {q:"List two ways an image can be stored or exist (e.g., physical, analog, digital).", ans:"Physical (printed on paper) and Analog (like film camera photos)."},
+  {q:"Give two examples of why we need image processing.", ans:"To improve image quality and to remove noise."},
+  {q:"Name the four types of digital images mentioned in the document.", ans:"Binary Image, Grayscale Image, Color Image (RGB Image), and Indexed Image."},
+  {q:"Why is a color image described as a \"3D matrix\"?", ans:"Because it has three planes of data (Red, Green, and Blue channels) stacked on top of the 2D height and width dimensions."},
+];
+
+// ═══════════════════════════════════════════════════════════
+// STATS
+// ═══════════════════════════════════════════════════════════
+const stats = {
+  s1:    {correct:0, wrong:0, answered:0},
+  s2mcq: {correct:0, wrong:0, answered:0},
+  s2tf:  {correct:0, wrong:0, answered:0},
+};
+
+function updateStats(key, total) {
+  const s = stats[key];
+  document.getElementById(`${key}-correct`).textContent = s.correct;
+  document.getElementById(`${key}-wrong`).textContent   = s.wrong;
+  const pct = Math.round((s.answered / total) * 100);
+  document.getElementById(`${key}-progress`).style.width = pct + '%';
+  document.getElementById(`${key}-progress-label`).textContent = `${s.answered} / ${total}`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER — Q&A MODE (answers always visible)
+// ═══════════════════════════════════════════════════════════
+const L = ['A','B','C','D','E'];
+
+function renderMCQ(data, containerId, statsKey) {
+  const container = document.getElementById(containerId);
+  data.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card open';
+    card.style.animationDelay = (i * 0.03) + 's';
+
+    const header = document.createElement('div');
+    header.className = 'q-header';
+    header.style.cursor = 'default';
+    header.innerHTML = `
+      <span class="q-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="q-text">${item.q}</span>`;
+    
+    // Only add explain button if question has an explanation
+    if (item.exp) {
+      const explainBtn = document.createElement('button');
+      explainBtn.className = 'explain-btn';
+      explainBtn.textContent = '?';
+      explainBtn.title = 'Explain this question';
+      explainBtn.onclick = (e) => {
+        e.preventDefault();
+        const explanation = card.querySelector('.q-explanation');
+        if (explanation) explanation.classList.toggle('visible');
+      };
+      header.appendChild(explainBtn);
+    }
+
+    const body = document.createElement('div');
+    body.className = 'q-body';
+
+    const grid = document.createElement('div');
+    grid.className = 'options-grid';
+
+    item.opts.forEach((opt, j) => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn' + (j === item.ans ? ' correct' : '');
+      btn.disabled = true;
+      btn.innerHTML = `<span class="opt-letter">${L[j]}</span><span>${opt}</span>`;
+      grid.appendChild(btn);
+    });
+
+    body.appendChild(grid);
+    
+    // Only add explanation box if question has an explanation
+    if (item.exp) {
+      const explanation = document.createElement('div');
+      explanation.className = 'q-explanation';
+      explanation.innerHTML = `<div class="exp-label">Explanation</div>${item.exp}`;
+      body.appendChild(explanation);
+    }
+    
+    card.appendChild(header);
+    card.appendChild(body);
+    container.appendChild(card);
+  });
+}
+
+function renderTF(data, containerId, statsKey) {
+  const container = document.getElementById(containerId);
+  data.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card open';
+    card.style.animationDelay = (i * 0.03) + 's';
+
+    const header = document.createElement('div');
+    header.className = 'q-header';
+    header.style.cursor = 'default';
+    header.innerHTML = `
+      <span class="q-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="q-text">${item.q}</span>`;
+    
+    // Only add explain button if question has an explanation
+    if (item.exp) {
+      const explainBtn = document.createElement('button');
+      explainBtn.className = 'explain-btn';
+      explainBtn.textContent = '?';
+      explainBtn.title = 'Explain this question';
+      explainBtn.onclick = (e) => {
+        e.preventDefault();
+        const explanation = card.querySelector('.q-explanation');
+        if (explanation) explanation.classList.toggle('visible');
+      };
+      header.appendChild(explainBtn);
+    }
+
+    const body = document.createElement('div');
+    body.className = 'q-body';
+    body.innerHTML = '<div class="q-type-tag">TRUE / FALSE</div>';
+
+    const row = document.createElement('div');
+    row.className = 'tf-row';
+    ['True','False'].forEach(label => {
+      const btn = document.createElement('button');
+      const isCorrect = (label === 'True') === item.ans;
+      btn.className = 'tf-btn' + (isCorrect ? ' correct' : '');
+      btn.disabled = true;
+      btn.textContent = label;
+      row.appendChild(btn);
+    });
+
+    body.appendChild(row);
+    
+    // Only add explanation box if question has an explanation
+    if (item.exp) {
+      const explanation = document.createElement('div');
+      explanation.className = 'q-explanation';
+      explanation.innerHTML = `<div class="exp-label">Explanation</div>${item.exp}`;
+      body.appendChild(explanation);
+    }
+    
+    card.appendChild(header);
+    card.appendChild(body);
+    container.appendChild(card);
+  });
+}
+
+function renderFill(data, containerId) {
+  const container = document.getElementById(containerId);
+  data.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card open';
+    card.style.animationDelay = (i * 0.03) + 's';
+
+    const header = document.createElement('div');
+    header.className = 'q-header';
+    header.style.cursor = 'default';
+    header.innerHTML = `
+      <span class="q-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="q-text">${item.q}</span>`;
+    
+    // Only add explain button if question has an explanation
+    if (item.exp) {
+      const explainBtn = document.createElement('button');
+      explainBtn.className = 'explain-btn';
+      explainBtn.textContent = '?';
+      explainBtn.title = 'Explain this question';
+      explainBtn.onclick = (e) => {
+        e.preventDefault();
+        const explanation = card.querySelector('.q-explanation');
+        if (explanation) explanation.classList.toggle('visible');
+      };
+      header.appendChild(explainBtn);
+    }
+
+    const body = document.createElement('div');
+    body.className = 'q-body';
+    body.innerHTML = `<div class="q-type-tag">FILL IN THE BLANK</div>
+      <div class="answer-always"><div class="ans-label">Answer</div>${item.ans}</div>`;
+    
+    // Only add explanation box if question has an explanation
+    if (item.exp) {
+      const explanation = document.createElement('div');
+      explanation.className = 'q-explanation';
+      explanation.innerHTML = `<div class="exp-label">Explanation</div>${item.exp}`;
+      body.appendChild(explanation);
+    }
+
+    card.appendChild(header);
+    card.appendChild(body);
+    container.appendChild(card);
+  });
+}
+
+function renderSolve(data, containerId) {
+  const container = document.getElementById(containerId);
+  data.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card open';
+    card.style.animationDelay = (i * 0.05) + 's';
+
+    const header = document.createElement('div');
+    header.className = 'q-header';
+    header.style.cursor = 'default';
+    header.innerHTML = `
+      <span class="q-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="q-text">${item.q}</span>`;
+    
+    // Only add explain button if question has an explanation
+    if (item.exp) {
+      const explainBtn = document.createElement('button');
+      explainBtn.className = 'explain-btn';
+      explainBtn.textContent = '?';
+      explainBtn.title = 'Explain this question';
+      explainBtn.onclick = (e) => {
+        e.preventDefault();
+        const explanation = card.querySelector('.q-explanation');
+        if (explanation) explanation.classList.toggle('visible');
+      };
+      header.appendChild(explainBtn);
+    }
+
+    const body = document.createElement('div');
+    body.className = 'q-body';
+    body.innerHTML = `<div class="q-type-tag">SOLVE</div>
+      <div class="answer-always"><div class="ans-label">Answer</div>${item.ans}</div>`;
+    
+    // Only add explanation box if question has an explanation
+    if (item.exp) {
+      const explanation = document.createElement('div');
+      explanation.className = 'q-explanation';
+      explanation.innerHTML = `<div class="exp-label">Explanation</div>${item.exp}`;
+      body.appendChild(explanation);
+    }
+
+    card.appendChild(header);
+    card.appendChild(body);
+    container.appendChild(card);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════════════════════════
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('visible');
+  const map = {s1:0, s2:1, test:2};
+  document.querySelectorAll('.tab-btn')[map[id]].classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════════════
+// TEST YOURSELF
+// ═══════════════════════════════════════════════════════════
+const selectedBanks = new Set();
+let shouldRandomize = true;
+
+function toggleBank(id) {
+  const card = document.getElementById('bank-' + id);
+  if (selectedBanks.has(id)) {
+    selectedBanks.delete(id);
+    card.classList.remove('selected');
+  } else {
+    selectedBanks.add(id);
+    card.classList.add('selected');
+  }
+  document.getElementById('start-btn').classList.toggle('ready', selectedBanks.size > 0);
+}
+
+function toggleRandomize() {
+  shouldRandomize = document.getElementById('randomize-toggle').checked;
+}
+
+let quizQueue = [], quizIndex = 0;
+let quizCorrect = 0, quizWrong = 0, quizSkipped = 0;
+let quizAnswered = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildQueue() {
+  let pool = [];
+  if (selectedBanks.has('s1'))        s1Data.forEach(q     => pool.push({...q, type:'mcq'}));
+  if (selectedBanks.has('lec1mcq'))   s2mcqData.forEach(q  => pool.push({...q, type:'mcq'}));
+  if (selectedBanks.has('lec1tf'))    s2tfData.forEach(q   => pool.push({...q, type:'tf'}));
+  if (selectedBanks.has('lec1fill'))  s2fillData.forEach(q => pool.push({...q, type:'fill'}));
+  if (selectedBanks.has('lec1solve')) s2solveData.forEach(q=> pool.push({...q, type:'solve'}));
+  return shouldRandomize ? shuffle(pool) : pool;
+}
+
+function startQuiz() {
+  quizQueue    = buildQueue();
+  quizIndex    = 0;
+  quizCorrect  = 0;
+  quizWrong    = 0;
+  quizSkipped  = 0;
+  document.getElementById('test-setup-wrap').classList.add('hidden');
+  document.getElementById('quiz-results').style.display = 'none';
+  document.getElementById('quiz-mode').classList.add('active');
+  renderQuizQ();
+}
+
+function renderQuizQ() {
+  if (quizIndex >= quizQueue.length) { showResults(); return; }
+
+  quizAnswered = false;
+  const item  = quizQueue[quizIndex];
+  const total = quizQueue.length;
+
+  document.getElementById('quiz-counter').textContent = `Question ${quizIndex + 1} / ${total}`;
+  document.getElementById('quiz-prog-bar').style.width = ((quizIndex / total) * 100) + '%';
+  document.getElementById('quiz-score-pill').innerHTML = `✓ ${quizCorrect} &nbsp;✗ ${quizWrong}`;
+
+  const typeMap = {mcq:'MULTIPLE CHOICE', tf:'TRUE / FALSE', fill:'FILL IN THE BLANK', solve:'SOLVE'};
+  document.getElementById('quiz-type-label').textContent = typeMap[item.type];
+  document.getElementById('quiz-question').textContent   = item.q;
+
+  const area = document.getElementById('quiz-options-area');
+  area.innerHTML = '';
+  const fb = document.getElementById('quiz-feedback');
+  fb.className = 'quiz-feedback';
+  fb.innerHTML = '';
+
+  // Reset nav
+  document.getElementById('quiz-next-btn').style.display   = 'none';
+  document.getElementById('quiz-skip-btn').style.display   = 'inline-block';
+  document.getElementById('quiz-submit-btn').style.display = 'none';
+
+  if (item.type === 'mcq') {
+    const grid = document.createElement('div');
+    grid.className = 'options-grid';
+    item.opts.forEach((opt, j) => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn';
+      btn.innerHTML = `<span class="opt-letter">${L[j]}</span><span>${opt}</span>`;
+      btn.onclick = () => {
+        if (quizAnswered) return;
+        quizAnswered = true;
+        grid.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+        swapToNext();
+        if (j === item.ans) {
+          btn.classList.add('correct');
+          quizCorrect++;
+          showFb(true, `${L[item.ans]}. ${item.opts[item.ans]}`);
+        } else {
+          btn.classList.add('wrong');
+          grid.querySelectorAll('.opt-btn')[item.ans].classList.add('correct');
+          quizWrong++;
+          showFb(false, `${L[item.ans]}. ${item.opts[item.ans]}`);
+        }
+        refreshPill();
+      };
+      grid.appendChild(btn);
+    });
+    area.appendChild(grid);
+
+  } else if (item.type === 'tf') {
+    const row = document.createElement('div');
+    row.className = 'tf-row';
+    ['True','False'].forEach(label => {
+      const btn = document.createElement('button');
+      btn.className = 'tf-btn';
+      btn.textContent = label;
+      btn.onclick = () => {
+        if (quizAnswered) return;
+        quizAnswered = true;
+        row.querySelectorAll('.tf-btn').forEach(b => b.disabled = true);
+        swapToNext();
+        const chosen = label === 'True';
+        if (chosen === item.ans) {
+          btn.classList.add('correct');
+          quizCorrect++;
+          showFb(true, item.ans ? 'True' : 'False');
+        } else {
+          btn.classList.add('wrong');
+          row.querySelectorAll('.tf-btn').forEach(b => {
+            if (b.textContent === (item.ans ? 'True' : 'False')) b.classList.add('correct');
+          });
+          quizWrong++;
+          showFb(false, item.ans ? 'True' : 'False');
+        }
+        refreshPill();
+      };
+      row.appendChild(btn);
+    });
+    area.appendChild(row);
+
+  } else if (item.type === 'fill') {
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.className = 'quiz-fill-input';
+    inp.placeholder = 'Type your answer…';
+    inp.onkeydown = e => { if (e.key === 'Enter') submitAnswer(); };
+    area.appendChild(inp);
+    document.getElementById('quiz-submit-btn').style.display = 'inline-block';
+    setTimeout(() => inp.focus(), 50);
+
+  } else if (item.type === 'solve') {
+    const ta = document.createElement('textarea');
+    ta.className = 'quiz-solve-input';
+    ta.placeholder = 'Write your answer here…';
+    area.appendChild(ta);
+    document.getElementById('quiz-submit-btn').style.display = 'inline-block';
+    setTimeout(() => ta.focus(), 50);
+  }
+}
+
+function swapToNext() {
+  document.getElementById('quiz-skip-btn').style.display   = 'none';
+  document.getElementById('quiz-next-btn').style.display   = 'inline-block';
+  document.getElementById('quiz-submit-btn').style.display = 'none';
+}
+
+function showFb(ok, text) {
+  const fb = document.getElementById('quiz-feedback');
+  if (ok) {
+    fb.className = 'quiz-feedback correct-fb';
+    fb.innerHTML = `<div class="fb-label">Correct ✓</div>${text}`;
+  } else {
+    fb.className = 'quiz-feedback wrong-fb';
+    fb.innerHTML = `<div class="fb-label">Incorrect — Correct Answer</div>${text}`;
+  }
+}
+
+function refreshPill() {
+  document.getElementById('quiz-score-pill').innerHTML = `✓ ${quizCorrect} &nbsp;✗ ${quizWrong}`;
+}
+
+function submitAnswer() {
+  if (quizAnswered) return;
+  const item = quizQueue[quizIndex];
+  const area = document.getElementById('quiz-options-area');
+
+  if (item.type === 'fill') {
+    const inp = area.querySelector('.quiz-fill-input');
+    if (!inp || !inp.value.trim()) return;
+    inp.disabled = true;
+    quizAnswered = true;
+    swapToNext();
+    const userAns = inp.value.trim().toLowerCase();
+    if (userAns === item.ans.toLowerCase()) {
+      quizCorrect++;
+      showFb(true, item.ans);
+    } else {
+      quizWrong++;
+      showFb(false, item.ans);
+    }
+    refreshPill();
+
+  } else if (item.type === 'solve') {
+    const ta = area.querySelector('.quiz-solve-input');
+    if (ta) ta.disabled = true;
+    quizAnswered = true;
+    swapToNext();
+    // Self-mark: show model answer
+    const fb = document.getElementById('quiz-feedback');
+    fb.className = 'quiz-feedback correct-fb';
+    fb.innerHTML = `<div class="fb-label">Model Answer</div>${item.ans}`;
+  }
+}
+
+function nextQuestion() {
+  quizIndex++;
+  renderQuizQ();
+}
+
+function skipQuestion() {
+  if (quizAnswered) return;
+  quizSkipped++;
+  quizIndex++;
+  renderQuizQ();
+}
+
+function showResults() {
+  document.getElementById('quiz-mode').classList.remove('active');
+  const res = document.getElementById('quiz-results');
+  res.style.display = 'block';
+  const answered = quizCorrect + quizWrong;
+  const pct = answered > 0 ? Math.round((quizCorrect / answered) * 100) : 0;
+  document.getElementById('res-pct').textContent     = pct + '%';
+  document.getElementById('res-correct').textContent = quizCorrect;
+  document.getElementById('res-wrong').textContent   = quizWrong;
+  document.getElementById('res-skipped').textContent = quizSkipped;
+  document.getElementById('res-total').textContent   = quizQueue.length;
+}
+
+function retryQuiz() {
+  document.getElementById('quiz-results').style.display = 'none';
+  quizQueue   = buildQueue();
+  quizIndex   = 0;
+  quizCorrect = 0;
+  quizWrong   = 0;
+  quizSkipped = 0;
+  document.getElementById('quiz-mode').classList.add('active');
+  renderQuizQ();
+}
+
+function exitQuiz() {
+  document.getElementById('quiz-mode').classList.remove('active');
+  document.getElementById('quiz-results').style.display = 'none';
+  document.getElementById('test-setup-wrap').classList.remove('hidden');
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+renderMCQ(s1Data,    's1-questions',    's1');
+renderMCQ(s2mcqData, 's2mcq-questions', 's2mcq');
+renderTF(s2tfData,   's2tf-questions',  's2tf');
+renderFill(s2fillData,   's2fill-questions');
+renderSolve(s2solveData, 's2solve-questions');
+</script>
+</body>
+</html>
