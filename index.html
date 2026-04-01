@@ -212,6 +212,47 @@
   }
   .q-card.open .q-chevron { transform: rotate(180deg); color: var(--accent); }
 
+  .explain-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all .2s;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .explain-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  .q-explanation {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    background: rgba(167,139,250,0.08);
+    border: 1px solid rgba(167,139,250,.2);
+    color: #c4b5fd;
+    font-size: 13px;
+    line-height: 1.5;
+    display: none;
+  }
+  .q-explanation.visible { display: block; }
+  .q-explanation .exp-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 6px;
+  }
+
   .q-body { display: none; padding: 0 22px 20px 64px; }
   .q-card.open .q-body { display: block; }
 
@@ -669,13 +710,13 @@ const s1Data = [
   {q:"What is a digital image?", opts:["A continuous visual signal","A numerical representation of a visual scene","A physical photograph","A printed picture"], ans:1},
   {q:"A digital image is divided into small elements called:", opts:["Nodes","Pixels","Frames","Vectors"], ans:1},
   {q:"Each pixel in a digital image stores:", opts:["A text value","A numerical value representing intensity or color","A vector coordinate","A file format"], ans:1},
-  {q:"Pixels represent:", opts:["Sound intensity","Image brightness or color at a specific location", "File compression", "Data transmission"], ans:1},
-  {q:"The structure used to represent digital images in computers is usually:", opts:["Linked List","Matrix","Stack","Queue"], ans:1},
+  {q:"Pixels represent:", opts:["Sound intensity","Image brightness or color at a specific location"], ans:1},
+  {q:"The structure used to represent digital images in computers is usually:", opts:["Linked List","Matrix","Stack","Queue"], ans:1, exp:"Images are essentially 2D grids of pixel values. A matrix perfectly represents this structure—each element (i,j) corresponds to a pixel location, and the value represents brightness or color. This is why MATLAB is so effective for image processing; matrices are its native data type. Linked lists, stacks, and queues are sequential structures that don't efficiently represent spatial 2D data."},
   {q:"Which of the following is a matrix operation?", opts:["Addition","Subtraction","Multiplication","All of the above"], ans:3},
   {q:"Which symbol represents matrix exponentiation in MATLAB?", opts:["*","^","/","+"], ans:1},
   {q:"Matrix subtraction is represented by:", opts:["+","-","*","/"], ans:1},
-  {q:"Matrix multiplication is represented by:", opts:["*",".*","+","./"], ans:0},
-  {q:"Matrix division is represented by:", opts:["/",".*","+","^"], ans:0},
+  {q:"Matrix multiplication is represented by:", opts:["*",".*","+","./"], ans:0, exp:"This is crucial: the single * operator performs proper matrix multiplication (following linear algebra rules), where element (i,j) in the result comes from the dot product of row i and column j. This is different from element-wise multiplication (.*)"},
+  {q:"Matrix division is represented by:", opts:["/",".*","+","^"], ans:0, exp:"The / operator in MATLAB is matrix division, which solves the linear system A/B ≈ A × B⁻¹. This is NOT element-wise division (./) but rather uses matrix algebra concepts. Use ./ only when you want to divide each element independently."},
   {q:"Element-wise multiplication in MATLAB is written as:", opts:["*",".*","./",".^"], ans:1},
   {q:"Element-wise division is represented by:", opts:["/","./",".*","^"], ans:1},
   {q:"Element-wise exponentiation uses:", opts:["^",".^","./",".*"], ans:1},
@@ -693,15 +734,15 @@ const s1Data = [
   {q:"The magic() function creates:", opts:["Random matrix","Matrix of zeros","Magic square matrix","Identity matrix"], ans:2},
   {q:"The linspace function is used to:", opts:["Create random values","Generate evenly spaced numbers","Create matrices","Delete values"], ans:1},
   {q:"In MATLAB, graphs can be created using:", opts:["One matrix only","Two matrices (X and Y values)","Text files","Pixel arrays"], ans:1},
-  {q:"Matrix exponentiation requires:", opts:["Rectangular matrices","Square matrices","Random matrices","Identity matrices"], ans:1},
-  {q:"The function max(A) returns:", opts:["Minimum value of matrix","Maximum value of each column","Random value","Average value"], ans:1},
+  {q:"Matrix exponentiation requires:", opts:["Rectangular matrices","Square matrices","Random matrices","Identity matrices"], ans:1, exp:"Only square matrices can be raised to powers in linear algebra. This is because matrix multiplication A×B is only defined when columns of A equal rows of B. For A^n to work, A must be n×n so that A×A produces a matrix of the same dimensions repeated."},
+  {q:"The function max(A) returns:", opts:["Minimum value of matrix","Maximum value of each column","Random value","Average value"], ans:1, exp:"max(A) returns the maximum value from EACH COLUMN (as a row vector), not a single value. If you want a single maximum, use max(max(A)). This behavior is important when working with image data where you might need column-wise statistics."},
   {q:"The function size(A) returns:", opts:["Number of rows and columns","Maximum element","Minimum element","Length of vector"], ans:0},
-  {q:"The function length(A) returns:", opts:["Total elements in matrix","Larger dimension of matrix","Number of rows only","Number of columns only"], ans:1},
-  {q:"The function diag(A) does what when A is a vector?", opts:["Creates a random matrix","Creates a square matrix with A on the diagonal","Removes diagonal values","Transposes matrix"], ans:1},
+  {q:"The function length(A) returns:", opts:["Total elements in matrix","Larger dimension of matrix","Number of rows only","Number of columns only"], ans:1, exp:"length(A) returns the larger dimension, not the total count. For a 3×5 matrix, it returns 5. For a vector, it returns its length. This is different from size(A) which returns both dimensions. Important distinction when checking matrix properties!"},
+  {q:"The function diag(A) does what when A is a vector?", opts:["Creates a random matrix","Creates a square matrix with A on the diagonal","Removes diagonal values","Transposes matrix"], ans:1, exp:"diag() is powerful: when given a vector, it creates a square matrix with the vector on the main diagonal and zeros elsewhere. When given a matrix, it extracts the diagonal. This is useful for creating scaling matrices in image processing."},
   {q:"The sum function in MATLAB is used to:", opts:["Multiply elements","Add elements","Divide elements","Rotate matrix"], ans:1},
   {q:"The transpose operator in MATLAB is:", opts:["*","'","^","./"], ans:1},
   {q:"The function inv(A) computes:", opts:["Transpose of matrix","Inverse of matrix","Maximum value","Sum of elements"], ans:1},
-  {q:"The inverse of a matrix can be computed only if the matrix is:", opts:["Random","Square","Diagonal","Sparse"], ans:1},
+  {q:"The inverse of a matrix can be computed only if the matrix is:", opts:["Random","Square","Diagonal","Sparse"], ans:1, exp:"First, the matrix must be SQUARE (n×n). But that's not enough—it must also be invertible (non-singular), meaning its determinant ≠ 0. Not all square matrices have inverses. This distinction is crucial: inv(A) will error if A is singular or rectangular. For rectangular matrices, use pseudo-inverse pinv(A)."},
   {q:"The function flipud(A) does what?", opts:["Flips matrix left-right","Flips matrix up-down","Rotates matrix","Transposes matrix"], ans:1},
   {q:"The function fliplr(A) does what?", opts:["Flips matrix left-right","Flips matrix up-down","Rotates matrix","Adds matrices"], ans:0},
   {q:"The function rot90(A) is used to:", opts:["Rotate matrix 45°","Rotate matrix 90°","Rotate matrix 180°","Flip matrix"], ans:1},
@@ -711,7 +752,7 @@ const s1Data = [
   {q:"The function imshow() is used to:", opts:["Read image","Display image","Rotate image","Save image"], ans:1},
   {q:"The function impixelinfo is used to:", opts:["Display pixel information","Remove pixels","Resize image","Blur image"], ans:0},
   {q:"The function impixel(A,column,row) returns:", opts:["Entire image","Pixel value at specific location","Matrix size","Image type"], ans:1},
-  {q:"Mathematical operations on image matrices can change:", opts:["Image color","Color contrast","Brightness","All of the above"], ans:3},
+  {q:"Mathematical operations on image matrices can change:", opts:["Image color","Color contrast","Brightness","All of the above"], ans:3, exp:"This is the power of digital image processing! Adding a constant increases brightness, multiplying increases contrast, and manipulating individual RGB channels changes colors. Since images are just matrices of numbers, any mathematical operation affects pixels in some way."},
   {q:"The function imshowpair() is used to:", opts:["Merge images","Compare two images","Delete images","Compress images"], ans:1},
   {q:"imshowpair() can display:", opts:["Two identical images","Difference between two images","Image histogram","Image size"], ans:1},
   {q:"In MATLAB image processing, performing mathematical operations on an image is possible because the image is represented as:", opts:["A text file","A matrix of numerical values","A compressed file","A graphical object"], ans:1},
@@ -719,34 +760,34 @@ const s1Data = [
 ];
 
 const s2mcqData = [
-  {q:"Which of the following is NOT an image?", opts:["A photograph","A sculpture","A drawing","A screenshot"], ans:1},
-  {q:"An image that is printed on paper is considered a:", opts:["Digital image","Physical image","Binary image","Analog image"], ans:1},
+  {q:"Which of the following is NOT an image?", opts:["A photograph","A sculpture","A drawing","A screenshot"], ans:1, exp:"A sculpture is a 3D physical object. While we can photograph it and get a 2D image, the sculpture itself isn't an 'image.' An image is always a 2D representation—photographs, drawings, paintings, and digital screenshots are all 2D representations of visual information."},
+  {q:"An image that is printed on paper is considered a:", opts:["Digital image","Physical image","Binary image","Analog image"], ans:1, exp:"Printed images are 'physical' (or analog) images because they exist as materials on paper. They're NOT digital—a digital image exists only as numerical data in a computer. You can SCAN a printed image to convert it to digital format, but the printed form itself is analog/physical."},
   {q:"What is the primary goal of image processing?", opts:["To delete unwanted images","To enhance images or extract useful information","To convert all images to color","To print images on paper"], ans:1},
-  {q:"Which of the following is NOT a reason we need image processing?", opts:["To remove noise","To detect edges","To increase the file size","To analyze medical images"], ans:2},
-  {q:"What does increasing the contrast of an image do?", opts:["It makes the image more blurry.","It makes objects more distinguishable from each other.","It removes color from the image.","It adds noise to the image."], ans:1},
+  {q:"Which of the following is NOT a reason we need image processing?", opts:["To remove noise","To detect edges","To increase the file size","To analyze medical images"], ans:2, exp:"Image processing aims to REDUCE file size (through compression), not increase it. All other options are genuine reasons: noise removal improves quality, edge detection identifies features, and medical imaging relies on processing to diagnose conditions."},
+  {q:"What does increasing the contrast of an image do?", opts:["It makes the image more blurry.","It makes objects more distinguishable from each other.","It removes color from the image.","It adds noise to the image."], ans:1, exp:"Contrast is the difference in brightness between light and dark areas. Increasing it makes bright areas brighter and dark areas darker, making boundaries and features stand out more clearly. This is mathematically done by: new_pixel = (pixel - 128) × contrast_factor + 128."},
   {q:"A low contrast image typically looks:", opts:["Very sharp","Dull or flat","Grainy","Overly bright"], ans:1},
-  {q:"Subdividing an image into its constituent parts (like finding lines, cars, or trees) is known as:", opts:["Image restoration","Image sharpening","Image segmentation","Image acquisition"], ans:2},
-  {q:"Which of the following is an application of image processing?", opts:["Writing an email","Editing a text document","Face recognition in smartphones","Creating a spreadsheet"], ans:2},
-  {q:"What is the first basic step in image processing?", opts:["Preprocessing","Image acquisition","Applying algorithms","Output"], ans:1},
+  {q:"Subdividing an image into its constituent parts (like finding lines, cars, or trees) is known as:", opts:["Image restoration","Image sharpening","Image segmentation","Image acquisition"], ans:2, exp:"Image SEGMENTATION is the process of partitioning an image into meaningful regions or objects. It's classification at the pixel level. This is a core technique in computer vision used for object detection, medical imaging, and autonomous systems."},
+  {q:"Which of the following is an application of image processing?", opts:["Writing an email","Editing a text document","Face recognition in smartphones","Creating a spreadsheet"], ans:2, exp:"Face recognition is a direct application—it uses image processing techniques to detect facial features, measure distances between them, and compare against stored patterns. Other real-world applications include: medical diagnosis, satellite image analysis, autonomous vehicles, and quality control in factories."},
+  {q:"What is the first basic step in image processing?", opts:["Preprocessing","Image acquisition","Applying algorithms","Output"], ans:1, exp:"Image ACQUISITION is the first step—you must obtain the image (photograph, scan, camera, sensor). Only after you have the image can you preprocess it (clean, normalize), apply algorithms (filter, segment), and output results."},
   {q:"How many possible colors can a pixel in a binary image have?", opts:["2 (Black and White)","256 shades of gray","Over 16 million","3 (Red, Green, Blue)"], ans:0},
-  {q:"In an 8-bit grayscale image, what pixel value represents the color white?", opts:["0","1","128","255"], ans:3},
-  {q:"A color image is often stored as a 3D matrix. What does the third dimension represent?", opts:["The pixel's brightness","The three color channels (Red, Green, Blue)","The image's height","The image's width"], ans:1},
-  {q:"What is the purpose of an indexed image?", opts:["To display more colors than an RGB image","To reduce memory size by using a color lookup table","To create 3D images","To store images for medical applications only"], ans:1},
+  {q:"In an 8-bit grayscale image, what pixel value represents the color white?", opts:["0","1","128","255"], ans:3, exp:"In grayscale, values range 0-255 (8 bits = 256 values). 0 is black (no light), 255 is white (maximum light), and everything between is varying shades of gray. This is standard across all image processing—higher values = brighter."},
+  {q:"A color image is often stored as a 3D matrix. What does the third dimension represent?", opts:["The pixel's brightness","The three color channels (Red, Green, Blue)","The image's height","The image's width"], ans:1, exp:"A color image is 3D: height × width × 3 (for RGB). Each of the 3 layers represents one color channel. For example, image[:,:,0] is all red values, image[:,:,1] is greens, image[:,:,2] is blues. This is why image(i,j) in color is actually a 3-element vector [R, G, B]."},
+  {q:"What is the purpose of an indexed image?", opts:["To display more colors than an RGB image","To reduce memory size by using a color lookup table","To create 3D images","To store images for medical applications only"], ans:1, exp:"Indexed images use a PALETTE or color lookup table (CLUT). Instead of storing RGB for each pixel, they store an index (0-255) that points to a color in the palette. This saves memory: indexed uses 1 byte/pixel vs RGB's 3 bytes/pixel. Trade-off: up to 256 colors instead of 16 million."},
 ];
 
 const s2tfData = [
-  {q:"An analog image, like a film camera photo, is stored as numerical data in a computer.", ans:false},
+  {q:"An analog image, like a film camera photo, is stored as numerical data in a computer.", ans:false, exp:"Film photos exist as chemical patterns on film—not numerical. To work with them in a computer, you must DIGITIZE (scan) them first, converting the continuous tones into pixels with numerical values. The film photo itself is analog, not digital."},
   {q:"A digital image is made up of small elements called matrices.", ans:true},
-  {q:"Image processing involves applying mathematical operations to physical photographs.", ans:false},
+  {q:"Image processing involves applying mathematical operations to physical photographs.", ans:false, exp:"Image processing operates on DIGITAL images (numbers in memory), not physical photographs. You must first digitize a photograph (scan/photograph with camera) to turn it into numbers. Then image processing can begin. The physical photograph itself is not processed."},
   {q:"Compressing an image is one of the reasons we need image processing.", ans:true},
-  {q:"Image sharpening increases the contrast between neighboring pixels, especially around edges.", ans:true},
-  {q:"De-blurring can perfectly reverse any kind of blur, including motion blur.", ans:false},
-  {q:"Edge detection is useful for object recognition and analysis.", ans:true},
-  {q:"Image restoration can involve removing periodic interference from an image.", ans:true},
+  {q:"Image sharpening increases the contrast between neighboring pixels, especially around edges.", ans:true, exp:"Sharpening works by exaggerating differences between adjacent pixels. This is done using filters that subtract blurred versions from the original. Where edges exist (big pixel differences), the effect is strong. This makes fine details and edges stand out."},
+  {q:"De-blurring can perfectly reverse any kind of blur, including motion blur.", ans:false, exp:"Deblurring is an inverse problem: once blur happens, some information is LOST forever. After a photograph is motion-blurred, pixels from different scenes are averaged—you can't recover which original pixels contributed. While some blur can be reduced (deconvolution), PERFECT reversal is mathematically impossible for all blur types."},
+  {q:"Edge detection is useful for object recognition and analysis.", ans:true, exp:"Edges are boundaries where pixel values change abruptly. They mark object outlines. Once detected, edges form a skeleton of the image's content, which is perfect for object recognition, shape analysis, and feature extraction. Most computer vision algorithms rely on edge information."},
+  {q:"Image restoration can involve removing periodic interference from an image.", ans:true, exp:"Periodic noise (like scan lines or aliasing) can be removed using frequency domain techniques (Fourier transforms). This is one of the most powerful image restoration applications—converting periodic patterns to a frequency domain where they become isolated spikes that can be filtered out."},
   {q:"Analyzing satellite images is an application of image processing.", ans:true},
   {q:"Preprocessing in image processing includes steps like removing noise and enhancing contrast.", ans:true},
-  {q:"In a grayscale image, each pixel is typically stored using only 1 bit.", ans:false},
-  {q:"A pixel in a color image has a single value that determines its color.", ans:false},
+  {q:"In a grayscale image, each pixel is typically stored using only 1 bit.", ans:false, exp:"1 bit can only represent 2 values (0 or 1 = black or white). Grayscale images need to represent 256 shades (0-255), which requires 8 BITS (1 byte) per pixel. A 1-bit image would be pure black and white with no gray tones—called a BINARY image."},
+  {q:"A pixel in a color image has a single value that determines its color.", ans:false, exp:"Each color pixel is actually THREE values: R, G, B (Red, Green, Blue intensities), each ranging 0-255. A single value can't specify color because RGB is a 3D color space. Only grayscale pixels have single values (representing intensity alone)."},
   {q:"Indexed images use a color lookup table (palette) to store color information.", ans:true},
 ];
 
@@ -807,6 +848,20 @@ function renderMCQ(data, containerId, statsKey) {
     header.innerHTML = `
       <span class="q-num">${String(i+1).padStart(2,'0')}</span>
       <span class="q-text">${item.q}</span>`;
+    
+    // Only add explain button if question has an explanation
+    if (item.exp) {
+      const explainBtn = document.createElement('button');
+      explainBtn.className = 'explain-btn';
+      explainBtn.textContent = '?';
+      explainBtn.title = 'Explain this question';
+      explainBtn.onclick = (e) => {
+        e.preventDefault();
+        const explanation = card.querySelector('.q-explanation');
+        if (explanation) explanation.classList.toggle('visible');
+      };
+      header.appendChild(explainBtn);
+    }
 
     const body = document.createElement('div');
     body.className = 'q-body';
@@ -823,6 +878,15 @@ function renderMCQ(data, containerId, statsKey) {
     });
 
     body.appendChild(grid);
+    
+    // Only add explanation box if question has an explanation
+    if (item.exp) {
+      const explanation = document.createElement('div');
+      explanation.className = 'q-explanation';
+      explanation.innerHTML = `<div class="exp-label">Explanation</div>${item.exp}`;
+      body.appendChild(explanation);
+    }
+    
     card.appendChild(header);
     card.appendChild(body);
     container.appendChild(card);
@@ -842,6 +906,20 @@ function renderTF(data, containerId, statsKey) {
     header.innerHTML = `
       <span class="q-num">${String(i+1).padStart(2,'0')}</span>
       <span class="q-text">${item.q}</span>`;
+    
+    // Only add explain button if question has an explanation
+    if (item.exp) {
+      const explainBtn = document.createElement('button');
+      explainBtn.className = 'explain-btn';
+      explainBtn.textContent = '?';
+      explainBtn.title = 'Explain this question';
+      explainBtn.onclick = (e) => {
+        e.preventDefault();
+        const explanation = card.querySelector('.q-explanation');
+        if (explanation) explanation.classList.toggle('visible');
+      };
+      header.appendChild(explainBtn);
+    }
 
     const body = document.createElement('div');
     body.className = 'q-body';
@@ -859,6 +937,15 @@ function renderTF(data, containerId, statsKey) {
     });
 
     body.appendChild(row);
+    
+    // Only add explanation box if question has an explanation
+    if (item.exp) {
+      const explanation = document.createElement('div');
+      explanation.className = 'q-explanation';
+      explanation.innerHTML = `<div class="exp-label">Explanation</div>${item.exp}`;
+      body.appendChild(explanation);
+    }
+    
     card.appendChild(header);
     card.appendChild(body);
     container.appendChild(card);
@@ -878,11 +965,33 @@ function renderFill(data, containerId) {
     header.innerHTML = `
       <span class="q-num">${String(i+1).padStart(2,'0')}</span>
       <span class="q-text">${item.q}</span>`;
+    
+    // Only add explain button if question has an explanation
+    if (item.exp) {
+      const explainBtn = document.createElement('button');
+      explainBtn.className = 'explain-btn';
+      explainBtn.textContent = '?';
+      explainBtn.title = 'Explain this question';
+      explainBtn.onclick = (e) => {
+        e.preventDefault();
+        const explanation = card.querySelector('.q-explanation');
+        if (explanation) explanation.classList.toggle('visible');
+      };
+      header.appendChild(explainBtn);
+    }
 
     const body = document.createElement('div');
     body.className = 'q-body';
     body.innerHTML = `<div class="q-type-tag">FILL IN THE BLANK</div>
       <div class="answer-always"><div class="ans-label">Answer</div>${item.ans}</div>`;
+    
+    // Only add explanation box if question has an explanation
+    if (item.exp) {
+      const explanation = document.createElement('div');
+      explanation.className = 'q-explanation';
+      explanation.innerHTML = `<div class="exp-label">Explanation</div>${item.exp}`;
+      body.appendChild(explanation);
+    }
 
     card.appendChild(header);
     card.appendChild(body);
@@ -903,11 +1012,33 @@ function renderSolve(data, containerId) {
     header.innerHTML = `
       <span class="q-num">${String(i+1).padStart(2,'0')}</span>
       <span class="q-text">${item.q}</span>`;
+    
+    // Only add explain button if question has an explanation
+    if (item.exp) {
+      const explainBtn = document.createElement('button');
+      explainBtn.className = 'explain-btn';
+      explainBtn.textContent = '?';
+      explainBtn.title = 'Explain this question';
+      explainBtn.onclick = (e) => {
+        e.preventDefault();
+        const explanation = card.querySelector('.q-explanation');
+        if (explanation) explanation.classList.toggle('visible');
+      };
+      header.appendChild(explainBtn);
+    }
 
     const body = document.createElement('div');
     body.className = 'q-body';
     body.innerHTML = `<div class="q-type-tag">SOLVE</div>
       <div class="answer-always"><div class="ans-label">Answer</div>${item.ans}</div>`;
+    
+    // Only add explanation box if question has an explanation
+    if (item.exp) {
+      const explanation = document.createElement('div');
+      explanation.className = 'q-explanation';
+      explanation.innerHTML = `<div class="exp-label">Explanation</div>${item.exp}`;
+      body.appendChild(explanation);
+    }
 
     card.appendChild(header);
     card.appendChild(body);
